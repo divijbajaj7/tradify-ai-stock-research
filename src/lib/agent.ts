@@ -23,8 +23,8 @@ export async function answerStockQuestion(question: string, history: ChatMessage
   if (!process.env.OPENROUTER_API_KEY) return { answer: deterministicAnswer(stock), stock };
   try {
     const model = new ChatOpenRouter(process.env.OPENROUTER_MODEL ?? "openai/gpt-5.4", { apiKey: process.env.OPENROUTER_API_KEY, temperature: 0.2, siteName: "Tradify" });
-    const agent = createAgent({ model, tools: [fundamentals, technicals], systemPrompt: "You are Tradify, an educational stock-research assistant. Use your tools for ticker-specific facts, label uncertainty, never invent figures, and never make buy/sell recommendations. Keep answers concise, with Fundamentals, Technical view, and Risks headings. End with: Educational research only — not financial advice." });
-    const result = await agent.invoke({ messages: [...history.slice(-10).map((message) => ({ role: message.role, content: message.content })), { role: "user", content: question }] });
+    const agent = createAgent({ model, tools: [fundamentals, technicals], systemPrompt: "You are Tradify, an educational stock-research assistant. For every ticker-specific user question, you MUST call at least one relevant analysis tool before replying; never ask the user to wait or offer to fetch data later. Use fundamental_analysis for fundamental requests and technical_analysis for technical requests. DMART refers to the Indian listing DMART.NS. Label uncertainty, never invent figures, and never make buy/sell recommendations. Keep answers concise, with Fundamentals, Technical view, and Risks headings. End with: Educational research only — not financial advice." });
+    const result = await agent.invoke({ messages: [...history.slice(-10).map((message) => ({ role: message.role, content: message.content })), { role: "user", content: `${question}\n\nResolved ticker context: ${symbol}. Use your tool now before responding.` }] });
     const last = result.messages.at(-1);
     return { answer: last ? textContent(last.content) : deterministicAnswer(stock), stock };
   } catch { return { answer: deterministicAnswer(stock), stock }; }

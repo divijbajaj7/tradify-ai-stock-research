@@ -44,19 +44,22 @@ function snapshot(symbol: string) {
   return enrich({ ...seed, symbol, name: symbol === seed.symbol ? seed.name : `${symbol} (demo fallback)`, prices: seededPrices(seed), source: "Built-in snapshot", updatedAt: new Date().toISOString() });
 }
 
-export function normalizeSymbol(value: string) { return value.replace(/[^A-Za-z.\-]/g, "").toUpperCase().slice(0, 10); }
+export function normalizeSymbol(value: string) {
+  const symbol = value.replace(/[^A-Za-z.\-]/g, "").toUpperCase().slice(0, 10);
+  return symbol === "DMART" ? "DMART.NS" : symbol;
+}
 export function symbolFromText(text: string) {
   const match = text.match(/\$?\b(AAPL|MSFT|NVDA|GOOGL|TSLA)\b/i);
   if (match) return match[1].toUpperCase();
-  const named = Object.entries({ apple: "AAPL", microsoft: "MSFT", nvidia: "NVDA", alphabet: "GOOGL", google: "GOOGL", tesla: "TSLA" }).find(([name]) => text.toLowerCase().includes(name));
+  const named = Object.entries({ dmart: "DMART.NS", apple: "AAPL", microsoft: "MSFT", nvidia: "NVDA", alphabet: "GOOGL", google: "GOOGL", tesla: "TSLA" }).find(([name]) => text.toLowerCase().includes(name));
   return named?.[1] ?? "AAPL";
 }
 
 export async function getStockData(input: string): Promise<StockAnalysis> {
   const symbol = normalizeSymbol(input) || "AAPL";
   try {
-    const module = await import("yahoo-finance2");
-    const yahooFinance = module.default as unknown as YahooClient;
+    const yahooModule = await import("yahoo-finance2");
+    const yahooFinance = new yahooModule.default() as unknown as YahooClient;
     const [quote, chart] = await Promise.all([
       yahooFinance.quote(symbol),
       yahooFinance.chart(symbol, { period1: new Date(Date.now() - 100 * 86400000), period2: new Date(), interval: "1d" }),
