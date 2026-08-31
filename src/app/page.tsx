@@ -1,69 +1,23 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, BarChart3, BrainCircuit, CandlestickChart, Check, ChevronRight, ShieldCheck } from "lucide-react";
+
+const features = [
+  { icon: BrainCircuit, title: "Ask in plain English", body: "Trade the tab-hopping for one clear conversation about any supported company.", accent: "text-[#ef233c]", span: "md:col-span-2 md:row-span-2" },
+  { icon: BarChart3, title: "Fundamental context", body: "Revenue, margins, valuation, and the financial signals behind the ticker.", accent: "text-amber-300", span: "" },
+  { icon: CandlestickChart, title: "Technical clarity", body: "Trend, moving averages, RSI, and price action in a single view.", accent: "text-sky-300", span: "" },
+];
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+  return <main className="noir-bg relative min-h-screen overflow-hidden"><div className="stars fixed inset-0" /><div className="grid-overlay fixed inset-0" />
+    <header className="fixed inset-x-0 top-0 z-20 px-4 pt-5"><nav className="glass mx-auto flex max-w-5xl items-center justify-between rounded-full px-5 py-3 sm:px-6"><Link href="/" className="flex items-center gap-2"><span className="h-4 w-4 rotate-45 rounded-[3px] bg-[#ef233c]" /><span className="font-display text-lg font-bold tracking-tight">Tradify</span></Link><div className="hidden items-center gap-7 text-sm text-zinc-400 md:flex"><a href="#product" className="hover:text-white">Product</a><a href="#approach" className="hover:text-white">Approach</a><a href="#learn" className="hover:text-white">Learn</a></div><div className="flex items-center gap-4"><Link href="/login" className="hidden text-sm text-zinc-300 hover:text-white sm:block">Log in</Link><Link href="/signup" className="rounded-full border border-white/10 bg-white/[.06] px-4 py-2 text-xs font-bold uppercase tracking-wider transition hover:border-[#ef233c] hover:bg-white/[.1]">Get started</Link></div></nav></header>
+    <section className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 pb-20 pt-32 text-center"><div className="fade-up mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.045] px-4 py-1.5 text-xs text-red-100"><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" /><span className="relative h-2 w-2 rounded-full bg-[#ef233c]" /></span>AI-powered market research, made approachable<ChevronRight className="h-3.5 w-3.5 text-[#ef233c]" /></div>
+      <h1 className="font-display fade-up max-w-5xl text-5xl font-semibold leading-[1.04] tracking-[-.055em] sm:text-7xl lg:text-8xl" style={{ animationDelay: ".1s" }}><span className="block bg-gradient-to-b from-white via-white to-white/45 bg-clip-text text-transparent">Market clarity.</span><span className="block bg-gradient-to-b from-white via-white to-white/45 bg-clip-text text-transparent">One <span className="text-[#ef233c]">conversation</span> away.</span></h1>
+      <p className="fade-up mx-auto mt-8 max-w-2xl text-lg leading-8 text-zinc-400 sm:text-xl" style={{ animationDelay: ".2s" }}>Tradify brings technical signals and fundamental context into one intelligent research assistant—so you can understand a stock without jumping between five websites.</p>
+      <div className="fade-up mt-10 flex flex-col items-center gap-4 sm:flex-row" style={{ animationDelay: ".3s" }}><Link href="/signup" className="cta-shine group rounded-full px-7 py-4"><span className="flex items-center gap-2 text-sm font-semibold">Start researching <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span></Link><a href="#product" className="rounded-full border border-white/10 bg-zinc-950 px-7 py-4 text-sm font-semibold text-zinc-300 transition hover:bg-zinc-900 hover:text-white">Explore the workflow</a></div>
+      <p className="mt-7 text-xs text-zinc-600">Educational research only. Not financial advice.</p></section>
+    <section id="product" className="relative z-10 border-y border-white/5 bg-white/[.02] py-9"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-12 gap-y-5 px-6 text-sm font-semibold text-zinc-500"><span className="text-[11px] font-bold uppercase tracking-[.2em] text-zinc-600">Powered by</span><span>Yahoo Finance</span><span>LangChain</span><span>OpenRouter</span><span>Local-first SQLite</span></div></section>
+    <section id="approach" className="relative z-10 mx-auto max-w-6xl px-6 py-28"><div className="mx-auto mb-14 max-w-2xl text-center"><p className="mb-4 text-xs font-bold uppercase tracking-[.22em] text-[#ef233c]">Your research desk</p><h2 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">A calmer way to read the market.</h2><p className="mt-5 text-zinc-400">Start with a question. Tradify pulls the relevant signals together, then makes the relationship between them clear.</p></div><div className="grid gap-4 md:auto-rows-[255px] md:grid-cols-2">{features.map(({ icon: Icon, title, body, accent, span }) => <article key={title} className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-900/70 to-black p-7 transition hover:border-white/20 ${span}`}><div className={`mb-5 inline-flex rounded-xl border border-white/10 bg-white/[.05] p-3 ${accent}`}><Icon className="h-6 w-6" /></div><h3 className="font-display text-2xl font-semibold">{title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-zinc-400">{body}</p><div className="absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-[#ef233c] opacity-0 blur-3xl transition group-hover:opacity-15" /></article>)}</div></section>
+    <section id="learn" className="relative z-10 bg-[#ef233c] px-6 py-20 text-black"><div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-center"><div><div className="mb-5 flex gap-1">{Array.from({ length: 5 }).map((_, index) => <Check key={index} className="h-5 w-5" />)}</div><p className="font-display text-3xl font-bold leading-tight sm:text-4xl">“I can finally see the fundamentals and technical story in the same place.”</p><p className="mt-5 text-sm font-semibold text-black/65">Built for curious investors who want a more deliberate research process.</p></div><Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-black px-7 py-4 text-sm font-bold text-white transition hover:bg-zinc-900">Get started <ArrowRight className="h-4 w-4" /></Link></div></section>
+    <footer className="relative z-10 border-t border-zinc-900 px-6 pb-8 pt-16"><div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2"><div><Link href="/" className="flex items-center gap-2"><span className="h-4 w-4 rotate-45 rounded-[3px] bg-[#ef233c]" /><span className="font-display text-xl font-bold">Tradify</span></Link><p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">A local-first AI stock research assistant for learning how market signals fit together.</p></div><div className="flex gap-14 text-sm text-zinc-400"><div><p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#ef233c]">Platform</p><Link href="/signup" className="block py-1 hover:text-white">Get started</Link><a href="#product" className="block py-1 hover:text-white">Features</a></div><div><p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#ef233c]">Important</p><p className="py-1">Educational use</p><p className="py-1">Not financial advice</p></div></div></div><div className="font-display mt-16 select-none overflow-hidden text-center text-[16vw] font-bold leading-none tracking-[-.08em] text-white/[.07]">TRADIFY</div><div className="mx-auto mt-6 flex max-w-6xl items-center justify-between border-t border-zinc-900 pt-6 text-[10px] uppercase tracking-widest text-zinc-600"><span>© 2026 Tradify</span><span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" />Research, not recommendations</span></div></footer>
+  </main>;
 }

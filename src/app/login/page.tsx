@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { AuthForm } from "@/components/auth-form";
+export default function LoginPage() { return <main className="noir-bg relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-24"><div className="stars absolute inset-0" /><div className="grid-overlay absolute inset-0" /><div className="relative z-10 w-full"><Link href="/" className="mx-auto mb-8 flex w-fit items-center gap-2"><span className="h-4 w-4 rotate-45 rounded-[3px] bg-[#ef233c]" /><span className="font-display text-xl font-bold">Tradify</span></Link><AuthForm mode="login" /></div></main>; }
