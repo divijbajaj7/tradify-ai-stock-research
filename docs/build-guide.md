@@ -1,4 +1,4 @@
-# Build Tradify end to end
+# Tradify learner build guide
 
 This guide turns Tradify into a repeatable workshop: a landing page, local authentication, saved conversations, live market data, and a tool-calling AI research assistant.
 
@@ -9,8 +9,8 @@ This guide turns Tradify into a repeatable workshop: a landing page, local authe
 - GitHub and Vercel accounts for publishing
 
 ```bash
-git clone <your-repository-url>
-cd tradify
+git clone https://github.com/divijbajaj7/tradify-ai-stock-research.git
+cd tradify-ai-stock-research
 npm install
 cp .env.example .env.local
 npm run dev
@@ -32,17 +32,37 @@ Set `OPENROUTER_API_KEY`, keep `OPENROUTER_MODEL=openai/gpt-5.4`, and replace `S
 6. Calculate SMA 20/50/200 and RSI-14 from closing prices.
 7. Register `fundamental_analysis` and `technical_analysis` tools with LangChain.
 8. Invoke `ChatOpenRouter` with the stored conversation messages and show the returned analysis.
-9. Add a LangGraph `MemorySaver` checkpointer with `thread_id` equal to the conversation ID. Keep SQLite as the durable transcript that hydrates memory after a server restart; do not use entity memory for live stock facts.
+9. Add a LangGraph `MemorySaver` checkpointer with `thread_id` equal to the conversation ID. Keep SQLite as the durable transcript that hydrates memory after a server restart.
 
-## 4. Verification checklist
+## 4. Conversation memory: the right choice
+
+Use [LangChain short-term memory](https://docs.langchain.com/oss/javascript/langchain/short-term-memory), not legacy `ConversationBufferMemory` or entity memory.
+
+- **Scope:** one `conversationId` becomes one `thread_id`, so one stock-research thread cannot leak into another.
+- **Runtime state:** LangGraph `MemorySaver` preserves the agent’s messages and tool calls over sequential turns.
+- **Durability:** SQLite saves the user-visible transcript and restores context if the local app restarts.
+- **Fresh starts:** the dashboard’s **New chat** button clears the active conversation; the next message starts a new thread.
+- **Why not entity memory:** stock prices, valuation, and fundamentals are time-sensitive. Always retrieve them from Yahoo Finance rather than saving stale “facts” as long-term entities.
+
+Example regression test:
+
+```text
+User: Do fundamental analysis for TCS stock.
+User: Is it a good time to invest in this stock?
+Expected: the second answer continues with TCS.NS, not AAPL.
+```
+
+## 5. Verification checklist
 
 - Create a new account, log out, and log back in.
 - Ask: “Analyze AAPL: strengths, risks, and the current trend.”
+- Ask: “Do fundamental analysis for TCS stock,” then “Is it a good time to invest in this stock?” and confirm the second response remains about TCS.
 - Confirm price cards appear, the source is visible, and the conversation remains after refresh.
+- Select **New chat** and confirm the next question begins without the prior stock context.
 - Remove `OPENROUTER_API_KEY` temporarily: the deterministic data-backed fallback should still answer.
 - Run `npm run lint`, `npm test`, and `npm run build` before publishing.
 
-## 5. Publish
+## 6. Publish
 
 ```bash
 git add .
@@ -53,7 +73,7 @@ git push -u origin main
 
 Import the repository in Vercel and set the three values from `.env.local` in Project Settings → Environment Variables. The deployment will render the UI and server routes, but local SQLite state does not persist between Vercel instances. Move the database layer to a hosted provider before treating it as a multi-user deployment.
 
-## 6. Next learner challenges
+## 7. Next learner challenges
 
 - Replace the dummy portfolio with a saved watchlist.
 - Stream agent tokens rather than waiting for a complete response.
