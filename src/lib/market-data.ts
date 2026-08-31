@@ -46,14 +46,17 @@ function snapshot(symbol: string) {
 
 export function normalizeSymbol(value: string) {
   const symbol = value.replace(/[^A-Za-z.\-]/g, "").toUpperCase().slice(0, 10);
-  return symbol === "DMART" ? "DMART.NS" : symbol;
+  return ({ DMART: "DMART.NS", TCS: "TCS.NS" } as Record<string, string>)[symbol] ?? symbol;
 }
-export function symbolFromText(text: string) {
+export function findSymbolInText(text: string) {
   const match = text.match(/\$?\b(AAPL|MSFT|NVDA|GOOGL|TSLA)\b/i);
   if (match) return match[1].toUpperCase();
-  const named = Object.entries({ dmart: "DMART.NS", apple: "AAPL", microsoft: "MSFT", nvidia: "NVDA", alphabet: "GOOGL", google: "GOOGL", tesla: "TSLA" }).find(([name]) => text.toLowerCase().includes(name));
-  return named?.[1] ?? "AAPL";
+  const named = Object.entries({ dmart: "DMART.NS", "avenue supermarts": "DMART.NS", tcs: "TCS.NS", "tata consultancy": "TCS.NS", apple: "AAPL", microsoft: "MSFT", nvidia: "NVDA", alphabet: "GOOGL", google: "GOOGL", tesla: "TSLA" }).find(([name]) => text.toLowerCase().includes(name));
+  if (named) return named[1];
+  const ticker = text.match(/\$?\b([A-Z]{2,10}(?:\.[A-Z]{1,3})?)\b/);
+  return ticker ? normalizeSymbol(ticker[1]) : null;
 }
+export function symbolFromText(text: string) { return findSymbolInText(text) ?? "AAPL"; }
 
 export async function getStockData(input: string): Promise<StockAnalysis> {
   const symbol = normalizeSymbol(input) || "AAPL";

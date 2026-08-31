@@ -39,7 +39,9 @@ conversations(id, user_id, title, created_at, updated_at)
 messages(id, conversation_id, role[user|assistant], content, created_at)
 ```
 
-The dashboard sends a `conversationId` with each chat turn. The server loads that conversation’s recent messages before invoking the agent, which makes memory persist across refreshes and future sessions.
+The dashboard sends a `conversationId` with each chat turn. The server uses that ID as the LangGraph `thread_id` for LangChain short-term memory. `MemorySaver` keeps the active thread state (including tool calls) during the running app, while SQLite remains the durable transcript and rehydrates a thread after a restart. This ensures a follow-up such as “Is it a good time to invest?” retains the previously discussed stock.
+
+This MVP intentionally does not use entity memory: company facts and market values change rapidly, so they must be refreshed through the market-data tools rather than recalled as cross-conversation entities.
 
 ## Public app API
 

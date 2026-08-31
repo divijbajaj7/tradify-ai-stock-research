@@ -32,6 +32,7 @@ Set `OPENROUTER_API_KEY`, keep `OPENROUTER_MODEL=openai/gpt-5.4`, and replace `S
 6. Calculate SMA 20/50/200 and RSI-14 from closing prices.
 7. Register `fundamental_analysis` and `technical_analysis` tools with LangChain.
 8. Invoke `ChatOpenRouter` with the stored conversation messages and show the returned analysis.
+9. Add a LangGraph `MemorySaver` checkpointer with `thread_id` equal to the conversation ID. Keep SQLite as the durable transcript that hydrates memory after a server restart; do not use entity memory for live stock facts.
 
 ## 4. Verification checklist
 

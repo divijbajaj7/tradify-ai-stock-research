@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   const history = getMessages(conversationId);
   addMessage(conversationId, "user", body.data.message);
   if (history.length === 0) setConversationTitle(conversationId, body.data.message.slice(0, 48));
-  const { answer, stock } = await answerStockQuestion(body.data.message, history);
+  const { answer, stock } = await answerStockQuestion(body.data.message, history, conversationId);
   const id = addMessage(conversationId, "assistant", answer);
   return NextResponse.json({ conversationId, message: { id, role: "assistant", content: answer, createdAt: new Date().toISOString() }, stock });
 }
