@@ -17,9 +17,11 @@ Browser
           │  thread_id = conversationId
           ├─ MemorySaver (short-term state)
           ├─ fundamental_analysis
-          └─ technical_analysis
-              │
+          ├─ technical_analysis
+          └─ web_search (current context only)
+              │              │
      Yahoo Finance → built-in snapshots fallback
+                             Tavily Search API
 ```
 
 ## Application responsibilities
@@ -31,7 +33,7 @@ Browser
 | Dashboard | Dummy portfolio, conversation history, chat composer, analysis cards, and a selectable candlestick chart. |
 | Chat route | Verifies user ownership, stores the turn, invokes the agent, and stores its reply. |
 | Market adapter | Normalizes five years of live Yahoo OHLC data and falls back to local AAPL, MSFT, NVDA, GOOGL, and TSLA fixtures. |
-| Agent | Selects fundamental and/or technical tools, then summarizes data without recommendations. |
+| Agent | Selects analysis tools and an optional Tavily current-context search, then summarizes evidence without recommendations. |
 
 ## Local data model
 
@@ -62,9 +64,20 @@ This MVP intentionally does not use legacy conversational-buffer/entity memory. 
 
 - `fundamental_analysis(symbol)` returns price, market cap, P/E, EPS, revenue, margins, and 52-week range.
 - `technical_analysis(symbol)` returns price movement, SMA 20/50/200, RSI-14, volume, and trend.
+- `web_search(query, days?)` uses [Tavily Search](https://docs.tavily.com/documentation/api-reference/endpoint/search) only for current news, earnings, management events, filings, regulations, or an explicit web-search request. It returns a compact set of source URLs and snippets; web content is untrusted evidence, never agent instructions.
 - The dashboard derives 1M, 3M, 5M, 1Y, and 5Y candlestick ranges from the five-year OHLC history returned for the active stock.
 - The model is called only when `OPENROUTER_API_KEY` is configured. Without it, Tradify returns a deterministic tool-based analysis so the workshop remains runnable.
-- All summaries state their data source and educational-only disclaimer. No buy/sell recommendation is produced.
+- All summaries state their data source and educational-only disclaimer. Tavily-backed answers include direct source URLs. No buy/sell recommendation is produced.
+
+## Environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `OPENROUTER_API_KEY` | For AI summaries | Server-only OpenRouter credential. |
+| `OPENROUTER_MODEL` | No | Defaults to `openai/gpt-5.4`. |
+| `TAVILY_API_KEY` | For live web context | Server-only Tavily credential; leave unset to disable the `web_search` tool. |
+| `SESSION_SECRET` | Yes | Signs local HTTP-only session cookies. |
+| `DATABASE_PATH` | No | Local SQLite location. |
 
 ## Deployment note
 

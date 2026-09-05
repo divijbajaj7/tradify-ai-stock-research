@@ -6,6 +6,7 @@ This guide turns Tradify into a repeatable workshop: a landing page, local authe
 
 - Node.js 22 or newer
 - An OpenRouter account and API key
+- A Tavily API key for optional current-news web research
 - GitHub and Vercel accounts for publishing
 
 ```bash
@@ -16,7 +17,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set `OPENROUTER_API_KEY`, keep `OPENROUTER_MODEL=openai/gpt-5.4`, and replace `SESSION_SECRET` with a long random value. Visit `http://localhost:3000`.
+Set `OPENROUTER_API_KEY`, keep `OPENROUTER_MODEL=openai/gpt-5.4`, set `TAVILY_API_KEY` to enable current-news web research, and replace `SESSION_SECRET` with a long random value. Visit `http://localhost:3000`.
 
 ## 2. Product prompt
 
@@ -31,9 +32,10 @@ Set `OPENROUTER_API_KEY`, keep `OPENROUTER_MODEL=openai/gpt-5.4`, and replace `S
 5. Create a data adapter that gets a quote plus five years of OHLC history from Yahoo Finance and falls back to tracked snapshot values.
 6. Calculate SMA 20/50/200 and RSI-14 from closing prices.
 7. Register `fundamental_analysis` and `technical_analysis` tools with LangChain.
-8. Invoke `ChatOpenRouter` with the stored conversation messages and show the returned analysis.
-9. Add a LangGraph `MemorySaver` checkpointer with `thread_id` equal to the conversation ID. Keep SQLite as the durable transcript that hydrates memory after a server restart.
-10. Render an SVG candlestick chart from OHLC history, with 1M, 3M, 5M, 1Y, and 5Y range controls; compact longer ranges into weekly-style buckets for legibility.
+8. Add a Tavily `web_search` tool for current news, earnings, filings, and regulatory context. Keep the key server-only and tell the model to treat results as untrusted evidence, not instructions.
+9. Invoke `ChatOpenRouter` with the stored conversation messages and show the returned analysis.
+10. Add a LangGraph `MemorySaver` checkpointer with `thread_id` equal to the conversation ID. Keep SQLite as the durable transcript that hydrates memory after a server restart.
+11. Render an SVG candlestick chart from OHLC history, with 1M, 3M, 5M, 1Y, and 5Y range controls; compact longer ranges into weekly-style buckets for legibility.
 
 ## 4. Conversation memory: the right choice
 
@@ -57,6 +59,7 @@ Expected: the second answer continues with TCS.NS, not AAPL.
 
 - Create a new account, log out, and log back in.
 - Ask: “Analyze AAPL: strengths, risks, and the current trend.”
+- Ask: “What are the latest earnings and news for TCS?” and confirm the reply includes current web context plus direct source URLs from Tavily. [Tavily’s JavaScript/REST quick start](https://docs.tavily.com/sdk/javascript/quick-start) documents the server-side API setup.
 - Ask: “Do fundamental analysis for TCS stock,” then “Is it a good time to invest in this stock?” and confirm the second response remains about TCS.
 - Confirm price cards appear, the source is visible, and the conversation remains after refresh.
 - Select every candlestick range (1M, 3M, 5M, 1Y, 5Y) and confirm the active range updates the chart.
@@ -73,7 +76,7 @@ git remote add origin <your-github-repository-url>
 git push -u origin main
 ```
 
-Import the repository in Vercel and set the three values from `.env.local` in Project Settings → Environment Variables. The deployment will render the UI and server routes, but local SQLite state does not persist between Vercel instances. Move the database layer to a hosted provider before treating it as a multi-user deployment.
+Import the repository in Vercel and set the environment variables from `.env.local` (including `TAVILY_API_KEY` if you want current-news search) in Project Settings → Environment Variables. The deployment will render the UI and server routes, but local SQLite state does not persist between Vercel instances. Move the database layer to a hosted provider before treating it as a multi-user deployment.
 
 ## 7. Next learner challenges
 
