@@ -1,6 +1,6 @@
 export type Role = "user" | "assistant";
 
-export type PricePoint = { date: string; close: number; volume?: number };
+export type PricePoint = { date: string; open?: number; high?: number; low?: number; close: number; volume?: number };
 
 export type StockAnalysis = {
   symbol: string;

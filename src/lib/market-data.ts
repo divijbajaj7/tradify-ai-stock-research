@@ -6,7 +6,7 @@ type YahooQuote = Record<string, unknown> & {
   regularMarketChangePercent?: number; marketCap?: number; trailingPE?: number; epsTrailingTwelveMonths?: number;
   totalRevenue?: number; profitMargins?: number; fiftyTwoWeekHigh?: number; fiftyTwoWeekLow?: number; regularMarketVolume?: number;
 };
-type YahooChart = { quotes?: { date?: Date; close?: number | null; volume?: number | null }[] };
+type YahooChart = { quotes?: { date?: Date; open?: number | null; high?: number | null; low?: number | null; close?: number | null; volume?: number | null }[] };
 type YahooClient = { quote: (symbol: string) => Promise<YahooQuote>; chart: (symbol: string, options: unknown) => Promise<YahooChart> };
 
 const snapshots: Record<string, Seed> = {
@@ -33,11 +33,15 @@ function enrich(base: Omit<StockAnalysis, "sma20" | "sma50" | "sma200" | "rsi14"
   return { ...base, sma20: sma20 && Number(sma20.toFixed(2)), sma50: sma50 && Number(sma50.toFixed(2)), sma200: sma200 && Number(sma200.toFixed(2)), rsi14, trend };
 }
 function seededPrices(seed: Seed) {
-  return Array.from({ length: 90 }, (_, index) => {
-    const date = new Date(Date.now() - (89 - index) * 86400000);
-    const wave = Math.sin(index * 0.37) * seed.step * 4 + Math.cos(index * 0.18) * seed.step * 2;
-    return { date: date.toISOString().slice(0, 10), close: Number((seed.start + index * seed.step + wave).toFixed(2)), volume: seed.volume ?? undefined };
-  }).map((point, index, points) => index === points.length - 1 ? { ...point, close: seed.price } : point);
+  const days = 1260;
+  const start = seed.price * 0.58;
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(Date.now() - (days - 1 - index) * 86400000);
+    const trend = start + ((seed.price - start) * index) / (days - 1);
+    const close = Number((trend + Math.sin(index * 0.37) * seed.step * 4 + Math.cos(index * 0.18) * seed.step * 2).toFixed(2));
+    const open = Number((close + Math.sin(index * 0.91) * seed.step * 1.3).toFixed(2));
+    return { date: date.toISOString().slice(0, 10), open, high: Number((Math.max(open, close) + seed.step * 1.4).toFixed(2)), low: Number((Math.min(open, close) - seed.step * 1.4).toFixed(2)), close, volume: seed.volume ?? undefined };
+  }).map((point, index, points) => index === points.length - 1 ? { ...point, open: points[index - 1]?.close ?? point.open, high: Math.max(point.high ?? point.close, seed.price), low: Math.min(point.low ?? point.close, seed.price), close: seed.price } : point);
 }
 function snapshot(symbol: string) {
   const seed = snapshots[symbol] ?? snapshots.AAPL;
@@ -65,9 +69,9 @@ export async function getStockData(input: string): Promise<StockAnalysis> {
     const yahooFinance = new yahooModule.default() as unknown as YahooClient;
     const [quote, chart] = await Promise.all([
       yahooFinance.quote(symbol),
-      yahooFinance.chart(symbol, { period1: new Date(Date.now() - 100 * 86400000), period2: new Date(), interval: "1d" }),
+      yahooFinance.chart(symbol, { period1: new Date(Date.now() - 5 * 365 * 86400000), period2: new Date(), interval: "1d" }),
     ]);
-    const prices = (chart.quotes ?? []).filter((item) => item.date && item.close != null).map((item) => ({ date: new Date(item.date!).toISOString().slice(0, 10), close: Number(item.close), volume: item.volume ?? undefined }));
+    const prices = (chart.quotes ?? []).filter((item) => item.date && item.close != null).map((item) => ({ date: new Date(item.date!).toISOString().slice(0, 10), open: item.open ?? undefined, high: item.high ?? undefined, low: item.low ?? undefined, close: Number(item.close), volume: item.volume ?? undefined }));
     if (!quote.regularMarketPrice || prices.length < 20) throw new Error("Incomplete Yahoo response");
     return enrich({
       symbol, name: quote.longName ?? quote.shortName ?? symbol, price: quote.regularMarketPrice,

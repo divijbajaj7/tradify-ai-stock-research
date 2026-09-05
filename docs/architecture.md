@@ -28,9 +28,9 @@ Browser
 | --- | --- |
 | Landing page | Explains the product and routes visitors to signup. |
 | Authentication | Email/password signup and login, bcrypt password hashes, signed HTTP-only cookie. |
-| Dashboard | Dummy portfolio, conversation history, chat composer, and latest analysis card. |
+| Dashboard | Dummy portfolio, conversation history, chat composer, analysis cards, and a selectable candlestick chart. |
 | Chat route | Verifies user ownership, stores the turn, invokes the agent, and stores its reply. |
-| Market adapter | Normalizes live Yahoo data and falls back to local AAPL, MSFT, NVDA, GOOGL, and TSLA fixtures. |
+| Market adapter | Normalizes five years of live Yahoo OHLC data and falls back to local AAPL, MSFT, NVDA, GOOGL, and TSLA fixtures. |
 | Agent | Selects fundamental and/or technical tools, then summarizes data without recommendations. |
 
 ## Local data model
@@ -62,6 +62,7 @@ This MVP intentionally does not use legacy conversational-buffer/entity memory. 
 
 - `fundamental_analysis(symbol)` returns price, market cap, P/E, EPS, revenue, margins, and 52-week range.
 - `technical_analysis(symbol)` returns price movement, SMA 20/50/200, RSI-14, volume, and trend.
+- The dashboard derives 1M, 3M, 5M, 1Y, and 5Y candlestick ranges from the five-year OHLC history returned for the active stock.
 - The model is called only when `OPENROUTER_API_KEY` is configured. Without it, Tradify returns a deterministic tool-based analysis so the workshop remains runnable.
 - All summaries state their data source and educational-only disclaimer. No buy/sell recommendation is produced.
 

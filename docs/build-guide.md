@@ -28,11 +28,12 @@ Set `OPENROUTER_API_KEY`, keep `OPENROUTER_MODEL=openai/gpt-5.4`, and replace `S
 2. Add signup/login with password hashing and a server-only session cookie.
 3. Create the SQLite `users`, `conversations`, and `messages` tables.
 4. Add the dashboard shell: dummy portfolio, conversation list, chat, and analysis panel.
-5. Create a data adapter that gets a quote/history from Yahoo Finance and falls back to tracked snapshot values.
+5. Create a data adapter that gets a quote plus five years of OHLC history from Yahoo Finance and falls back to tracked snapshot values.
 6. Calculate SMA 20/50/200 and RSI-14 from closing prices.
 7. Register `fundamental_analysis` and `technical_analysis` tools with LangChain.
 8. Invoke `ChatOpenRouter` with the stored conversation messages and show the returned analysis.
 9. Add a LangGraph `MemorySaver` checkpointer with `thread_id` equal to the conversation ID. Keep SQLite as the durable transcript that hydrates memory after a server restart.
+10. Render an SVG candlestick chart from OHLC history, with 1M, 3M, 5M, 1Y, and 5Y range controls; compact longer ranges into weekly-style buckets for legibility.
 
 ## 4. Conversation memory: the right choice
 
@@ -58,6 +59,7 @@ Expected: the second answer continues with TCS.NS, not AAPL.
 - Ask: “Analyze AAPL: strengths, risks, and the current trend.”
 - Ask: “Do fundamental analysis for TCS stock,” then “Is it a good time to invest in this stock?” and confirm the second response remains about TCS.
 - Confirm price cards appear, the source is visible, and the conversation remains after refresh.
+- Select every candlestick range (1M, 3M, 5M, 1Y, 5Y) and confirm the active range updates the chart.
 - Select **New chat** and confirm the next question begins without the prior stock context.
 - Remove `OPENROUTER_API_KEY` temporarily: the deterministic data-backed fallback should still answer.
 - Run `npm run lint`, `npm test`, and `npm run build` before publishing.
